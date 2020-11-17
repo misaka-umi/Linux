@@ -280,3 +280,28 @@ rw-rw-r--:664
 ```
 * 文字表示法
 ```
+用户表示: u g o a(all)
+权限表示: r w x
+操作符号: + - =
+e.g. chmod u=rwx g=rx o=x filename
+```
+#### 文件所有者与属组修改
+> chmod 选项 要修改成的所有者和属组 文件
+
+```仅root用户```
+* 所有者和属组都改为test
+```
+chmod test:test filename
+```
+* 仅修改所有者
+```
+chmod test filename
+```
+* 仅修改属组
+```
+chmod :test filename
+or
+chgrp test filename
+```
+#### 文件默认权限
+> 
