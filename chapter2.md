@@ -283,7 +283,7 @@ rw-rw-r--:664
 用户表示: u g o a(all)
 权限表示: r w x
 操作符号: + - =
-e.g. chmod u=rwx g=rx o=x filename
+e.g. chmod u=rwx,g=r,o=x filename
 ```
 #### 文件所有者与属组修改
 > chmod 选项 要修改成的所有者和属组 文件
