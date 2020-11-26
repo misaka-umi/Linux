@@ -71,3 +71,4 @@ e.g. shutdown -h +10 'shutdown after 10 mins'
 ```
 >poweroff 、 reboot 、 halt （shutdown)
 
+各种关机命令
