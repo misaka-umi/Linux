@@ -13,11 +13,14 @@
 分为命令模式、插入模式、底行模式
 > 命令模式 
 * 输入的字符会被判断成命令，且不显示
-*常用命令
+* 常用命令
+![](https://github.com/misaka-umi/Linux/blob/main/vi-1.png) 
+![](https://github.com/misaka-umi/Linux/blob/main/vi-2.png)
+![](https://github.com/misaka-umi/Linux/blob/main/vi-3.png)
 ```
 谁爱整理谁整理，傻逼玩意儿真他妈多
 ```
->插入模式 
+> 插入模式 
 * 所输入的都会被判断成正在编辑的文件内容
 * 在此模式下进行文本的输入操作
 * 通过"esc"键返回命令模式
@@ -45,3 +48,126 @@ ZZ			文件若无改动，则不保存离开；若有改动，则保存离开
 :1,$s/word1/word2/gc  在第一列到最后一列之间寻找word1并替换成word2，并让用户confirm
 ```
 #### vi暂存文件
+编辑文件时会在同文件下生成.filename.swap，若不正常退出/掉线，可以此文件救援
+下次编辑文件时会出现如下提示：
+* Oopen Read-only：通过只读方式打开，可多人同时查看
+* Edit anyway：正常方式打开文件，但不会载入暂存文件，可能出现两个使用者互相改变对方的文件问题。
+* Recover：加载暂存文件，将之前未存储内容找回。但要手动删除swap文件
+* Delete it: 确定暂存文件误用可以直接删除。
+* Quit：离开vim
+* Abort:和quit类似，回到命令行
+#### vi编辑器扩展功能
+> 区块选择
+* v      字符选择，会将光标经过处反白选择
+* V      行选择，会将光标经过的行反白选择
+* Ctrl+v 区块选择，以长方形方式选择文件内容
+> 多文本编辑器/当vi打开多个文件时
+* :n     编辑下一个
+* :N     编辑上一个
+* :files 列出打开的所有文件
+```
+还有许多命令
+```
+> 多窗口功能
+* :sp filename  //ctrl+w+(上/下）
+```
+若无该文件则创建新文件
+```
+#### vi编辑器常用设置
+* 使用vi编辑器会在家目录下生成.viminfo文件，记录访问设置、搜索记录等
+* 使用set all可以查看所有环境的设置
+* 配置文件/etc/vimrc
+### Linux C 开发工具
+---
+#### 概述
+* GCC全称GNU Compiler Collection，GNU编译套件。
+* GCC是由GNU开发的编程语⾔编译器，包括C、Cpp、Objective-C、Fortran、Java、Ada、Golang。
+#### 编译过程
+> 可直接编译
+``` 
+gcc 现有文件 -o 目标文件
+```
+> 四阶段
+* 预处理(ccp) gcc -E filename -o filename.i
+* 编译器(gcc) gcc -S filename.i -o filename.s
+* 汇编器(as)  gcc -c filename.s -o filename.o
+* 链接器(ld)  gcc filename.o -o filename
+> 执行
+* ./filename
+#### 多文件编译
+> 格式一：多文件同时编译
+```
+gcc 1.c 2.c 3.c –o test
+```
+> 格式2：每个文件分别编译，并链接成可执行文件
+```
+gcc –c 1.c –o 1.o
+gcc –c 2.c –o 2.o
+gcc –c 3.c –o 3.o
+gcc 1.o 2.o 3.o –o test
+```
+### 静态与动态链接库
+---
+### 分布式版本控制系统git
+---
+#### git简介
+开源的分布式版本控制系统，Linus Torvalds为帮助管理Linux内核开发所开发的版本控制软件。
+与常用的版本控制工具不同，采用了分布式版本库，不需要服务器端软件支持。
+#### git安装
+> 安装
+```
+sudo yum install git //centos
+sudo apt-get install git //ubuntu
+```
+> 配置
+```
+git config --global user.email 'saudhius@gamil.com'
+git config --global user.name 'asioj'
+```
+#### git使用
+```
+mkdir dir1 //创建工作目录（工作区）
+cd dir1
+git init // 初始化，生成.git目录（用于跟踪管理版本库）
+
+git config --global user.email 'saudhius@gamil.com'
+git config --global user.name 'asioj' //配置邮箱和用户名
+
+//工作区 →(add)→ stage →(commit)→ master
+
+touch README.txt //新建readme
+git add README.txt // 添加进stage（暂存区）
+git commit -m "This is README.txt" //将暂存区所有文件提交到当前的分支
+git status //查看状态
+
+//修改
+
+vi README.txt //修改
+git status
+git diff //用diff格式显示此时的文件与已提交的有什么不同
+git add README.txt
+git commit -m "change sth" //修改了什么
+
+//开发时有时需退回到之前的版本
+
+git log //查看提交记录，并复制要退回的版本号
+git reset --hard HEAD^ //直接退回到上一个版本号
+git reset --hard 版本号 //进入指定修改版本
+//尽管git log 与git reflog的版本号显示方式不同，
+但前者的commit 较长字符 与 后者的最前面的较短的字符
+都是版本号
+
+//撤销修改
+vi a.txt //修改文件
+git checkout -- a.txt //使该文件回到最后一次git commit或git add时的状态
+touch b.txt
+git add b.txt
+git reset HEAD b.txt //撤销b.txt的git add，即从暂存区撤销
+git rm a.txt //将提交到版本库的文件删除(可用git checkout -- filename从版本库恢复)//没能恢复
+
+//远程操作，上传到github
+
+//首先应在github上创建和该项目同名的repository
+git remote add origin git@github.com:misaka-umi/项目名
+git push -u origin master //第一次提交
+
