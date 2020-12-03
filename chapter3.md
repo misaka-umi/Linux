@@ -272,3 +272,21 @@ quit //退出
 * 诞生于1977年，主要用于C语言项目
 * 通过makefile文件描述源程序之间的相互关系并自动编译
 * 若之后修改个别文件，会自动检测哪些修改过，只对这些文件编译
+#### 使用
+```
+make a.txt //制作文件a.txt，但此时make本身并不知道
+假设a.txt依赖于b.txt和c.txt，是后面两个文件连接的结合
+那么make需知道如下规则：
+a.txt: b.txt c.txt 
+cat b.txt c.txt > a.txt //输出重定向
+这样的规则应写入makefile文件，同时也可指定其他名字
+make -f rules.txt 
+make --file=rules.txt
+//规则形式
+<target>:<prerequisites> //目标：前置条件
+[tab]<command>  //此处tab是按键，然后输入命令，前置条件和命令必须有一个，目标是必须有的
+```
+#### 文件格式
+> target
+
+
