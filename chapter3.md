@@ -163,7 +163,8 @@ git checkout -- a.txt //使该文件回到最后一次git commit或git add时的
 touch b.txt
 git add b.txt
 git reset HEAD b.txt //撤销b.txt的git add，即从暂存区撤销
-git rm a.txt //将提交到版本库的文件删除(可用git checkout -- filename从版本库恢复)//没能恢复
+git rm a.txt //将提交到版本库的文件删除
+(可用git checkout -- filename从版本库恢复)//没能恢复
 
 //远程操作，上传到github
 
@@ -171,3 +172,42 @@ git rm a.txt //将提交到版本库的文件删除(可用git checkout -- filena
 git remote add origin git@github.com:misaka-umi/项目名
 git push -u origin master //第一次提交
 
+//添加配置
+
+//远程克隆，将他人/开源的项目克隆到本地开发
+git clone git@github.com:user_name/reposity_name
+
+//分支管理,每次提交都是一条时间线，只有一个分支叫做master
+git checkout -b branch_name //创建一个名为branch——name的分支
+git branch //查看所在分支
+git checkout master //切换回master
+git merge branch_name //合并分支
+git branch -d branch_name //删除分支
+
+//冲突管理，多分支修改相同文件，合并时会冲突
+git checkout -b bra1
+vi README.txt //修改
+git add README.txt
+git commit -m 'change'
+git checkout master
+vi README.txt //修改
+git merge bra1 //出现冲突
+git status //检查
+//提交解决冲突后的文件，删除分支
+```
+> ssh
+```
+Secure Shell(SSH) 是由 IETF(The Internet Engineering 
+TaskForce) 制定的建立在应用层基础上的安全网络协议。它
+是专为远程登录会话(甚至可以用Windows远程登录Linux服务
+器进行文件互传)和其他网络服务提供安全性的协议。
+ssh user@host
+```
+### 调试器GDB的使用
+---
+> 介绍
+* GNU开源组织发布的Linux下的程序调试工具
+* 可以在程序中设置断点、查看变量值，追踪执行过程
+* 利用上述功能可方便找出非语法错误
+> 启动和退出gdb
+./test //运行出错，代码无错误
