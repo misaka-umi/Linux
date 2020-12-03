@@ -179,10 +179,10 @@ git clone git@github.com:user_name/reposity_name
 
 //分支管理,每次提交都是一条时间线，只有一个分支叫做master
 git checkout -b branch_name //创建一个名为branch——name的分支
-git branch //查看所在分支
-git checkout master //切换回master
-git merge branch_name //合并分支
-git branch -d branch_name //删除分支
+git branch                  //查看所在分支
+git checkout master         //切换回master
+git merge branch_name       //合并分支
+git branch -d branch_name   //删除分支
 
 //冲突管理，多分支修改相同文件，合并时会冲突
 git checkout -b bra1
@@ -190,9 +190,9 @@ vi README.txt //修改
 git add README.txt
 git commit -m 'change'
 git checkout master
-vi README.txt //修改
+vi README.txt  //修改
 git merge bra1 //出现冲突
-git status //检查
+git status     //检查
 //提交解决冲突后的文件，删除分支
 ```
 > ssh
@@ -209,26 +209,66 @@ ssh user@host
 * GNU开源组织发布的Linux下的程序调试工具
 * 可以在程序中设置断点、查看变量值，追踪执行过程
 * 利用上述功能可方便找出非语法错误
-> 启动和退出gdb
+> gdb的使用
 ```
 gcc -g test1.c -o test1 //必须有-g，才能使用gdb
 ./test1 //运行出错，但代码无语法错误
 gdb -q //-q是关闭版权信息
 //进入gdb，前缀有（gdb），不用自己输入，下文省略
 
-list //输出上次调用list的后10行代码
-list - //输出上次调用list的前10行代码
-list n //输出第n行附近的10行代码
+list        //输出上次调用list的后10行代码
+list -      //输出上次调用list的前10行代码
+list n      //输出第n行附近的10行代码
 list 函数名 //输出函数附近的10行代码
-list 5，10 //输出第5到第10行的代码
+list 5，10  //输出第5到第10行的代码
 
 //搜索字符串
-list 1，1 //将当前行设置为第一行
-serach get_sum //搜索第一行以后包含get_sum字符串的行（不包含第一行）
-forward get_sum //同上
+list 1，1              //将当前行设置为第一行
+serach get_sum         //搜索第一行以后包含get_sum字符串的行（不包含第一行）
+forward get_sum        //同上
 reverse-search get_sum //从当前行向前查找第一个匹配的
 
 //执行
 run
 
-//设置和管理断点
+//设置断点
+break n                //运行到指定行不再执行
+break 函数名           //运行到该函数之前就不再运行，停在该函数第一行
+break n/函数名 if条件
+break get_sum if i==99 //执行到get_sum时，若i==9成立则停止
+watch 条件表达式       //run之后才能设置，且要保证条件表达式中的变量已经使用过
+
+//管理断点
+info breakpoints //查看当前设置的断点
+disable 断点编号 //使该断点失效
+enable 断电编号  //使该断点有效
+clear 行号       //删除此行断点
+delete           //删除程序中所有断点
+delete 断电编号  //删除该断点，多个断点则空格隔开
+
+//查看和设置变量的值
+程序运行到中断点的时候查看
+* print
+print 变量/表达式 //打印变量或表达式的值
+print 变量=值     //对变量赋值
+* whatis
+whatis 变量/表达式 //显示变量或表达式的数据类型
+* set
+set variable 变量=值 //给变量赋值
+
+//控制程序的执行
+continue //使程序运行到下一个断点或完成运行
+kill     //结束当前程序的调试（中断该次运行）
+next/step //一次一条执行该程序代码
+
+//帮助命令
+help 类名 //直接输入help可查看类名
+
+quit //退出
+```
+### 工程管理器make的使用
+---
+#### make概念
+* 诞生于1977年，主要用于C语言项目
+* 通过makefile文件描述源程序之间的相互关系并自动编译
+* 若之后修改个别文件，会自动检测哪些修改过，只对这些文件编译
