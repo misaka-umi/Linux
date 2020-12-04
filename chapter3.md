@@ -108,6 +108,32 @@ gcc 1.o 2.o 3.o –o test
 ```
 ### 静态与动态链接库
 ---
+#### Linux库的创建和使用
+> 什么是库
+* 写好的代码文件编译后可以直接调用，本质是可执行代码的二进制形式那么就可以写入内存
+* 系统提供的库的路径
+```
+/usr/lib
+/usr/lib64
+```
+* Linux库文件名的组成
+```
+前缀(lib) + 库名 + 后缀（.a静态库；.so动态库）
+libmm.a: 库名为mm的静态库
+libnn.so: 库名为nn的动态库
+```
+> 静态库与动态库的区别
+* 静态库被调用是完全拷贝，一次链接即可，代码体积大，内存中会调用函数多个副本
+* 动态库类似快捷方式，程序执行时在调用时载入，代码体积小，被调用函数在内存中只有一个副本
+> 静态库的创建
+* 在头文件中声明静态库中导出的函数
+* 在源文件中实现
+
+
+
+
+
+
 ### 分布式版本控制系统git
 ---
 #### git简介
@@ -296,3 +322,62 @@ clean:
  //删除文件
 但如果有个clean文件，仍然要使命令为目标则
 .PHONY: clean //声明clean是伪目标
+//makefile目标往往有很多种，若make命令未指定，则会执行第一个目标
+```
+> prerequisites
+* 前置条件是一组文件名，用空格分隔
+* 只要前置文件不存在或更新过，目标就要重新构建
+```
+result.txt: source.txt
+  cp source.txt result.txt
+构建source.txt的前置条件是source.txt，若路径下有该文件则可运行，
+否则就要再写一条规则来生成source.txt
+source.txt:
+  echo"this is the source">source.txt
+source.txt无前置条件，只要source.txt不存在，
+每次调用make source.txt都会生成source.txt
+```
+* 若连续执行两次上述的make result.txt
+```
+第一次会先创建source.txt再创建result.txt
+第二次执行，make会发现source.txt没有更新就会不执行任何操作
+```
+> command
+* 命令表示如何更新目标文件，由一行或多行shell命令组成
+* 构建“目标”的具体指令，结果通常是生成目标文件
+* 每行命令前都要有tab键，若想换其他键需要用.RECIPEPREFIX声明
+```
+每⾏命令都是在⼀个单独运⾏的Shell中执⾏的，这些Shell间没有继承关系。
+var:
+export foo=bar
+echo “foo=[$$foo]”
+结果：
+解决⽅法：
+(1) ;
+(2) \ # “;”后可以换行
+(3) .ONESHELL
+```
+> 使用实例（构建）
+```
+cat makefile //查看makefile内容
+main: main.o module1.o module2.o
+  gcc main.o module1.o module2.o -o main
+main.o: main.c head1.h head2.h common_head.h
+  gcc -c main.c //会生成main.o
+module1.o: module1.c head1.h
+  gcc -c module1.c
+module2.o: module2.c head2.h
+  gcc -c module2.c
+
+make //第一次执行
+gcc -c main.c
+gcc -c module1.c
+gcc -c module2.c
+gcc main.o module1.o module2.o -o main
+
+vi head1.h //修改头文件
+make
+gcc -c main.c
+gcc -c module1.c
+gcc main.o module1.o module2.o -o main
+```
