@@ -93,7 +93,52 @@ user3:x:1004:1004::/home/user3:/bin/bash
 ![](https://github.com/misaka-umi/Linux/blob/main/useradd.png)
 > passwd
 * 指令和修改用户账户的口令，root可以为自己和其他用户设置，普通用户只能为自己设置
-* passwd 选 ## 查看账户信息
+* passwd 选项 username
+```
+-l 锁定（停用）用户账户
+-u 口令解锁
+-d 将用户口令设置为空，这与未设置口令的账户不同。
+   未设置口令的账户无法登录系统，而口令为空的账户可以
+-f 强迫用户下次登录时必须修改口令
+-n 指定口令的最短存活期
+-x 指定口令的最长存活期
+-w 口令要到期前提前警告的天数
+-i 口令过期后多少天停用账户
+-S 显示账户口令的简短状态信息
+```
+> usermod
+* 修改用户账户信息
+* usermod 选项 用户名
+```
+-c 填写用户账户的备注信息
+-d -m 参数-m与参数-d连用，可重新指定用户的家目录并自动把旧的数据转移过去
+-e 账户的到期时间，格式为YYYY-MM-DD
+-g 变更所属用户组
+-G 变更扩展用户组
+-L 锁定用户禁止其登录系统
+-U 解锁用户，允许其登录系统
+-s 变更默认终端
+-u 修改用户的UID
+```
+> userdel
+* 删除用户账户
+* userdel -r username
+```
+-r 选项，删除用户账户的同时还会将用户主目录及包含的所有文件和目录都删掉
+```
+> 禁用和恢复用户账户
+* passwd
+```
+passwd -1 user1 //锁定用户密码
+passwd -u user1 //重新启用
+```
+* usermod
+```
+usermod -L user1 //锁定
+usermod -U user1 //恢复
+* 修改/etc/passwd文件，passwd域添加"*"
+```
+#### 查看账户信息
 > id
 * 查看当前用户的uid、gid、所属群组信息，若不指定则显示当前用户
 * id username
@@ -103,3 +148,79 @@ user3:x:1004:1004::/home/user3:/bin/bash
 > w
 * 查看当前登录系统用户和详细信息
 * w
+#### 群组管理
+> 添加群组
+* groupadd 选项 新群组名
+> 删除群组
+* groupdel 选项 群组名
+> 修改群组
+* groupmod 选项 群组名
+```
+groupmod -g 1003 u1 //将u1组gid改为1003
+groupmod -n newname u1 //将u1组改名为newname
+```
+> 为群组添加用户
+* gpasswd 选项 用户 组
+* 在附属组中增加删除用户使用该命令，仅有root用户和组管理员可使用
+```
+-a 将用户加入
+-d 将用户移除
+-r 取消组的密码
+-A 给组指派管理员
+```
+#### 初始群组和有效群组
+* 创建用户时，用户被分配初始群组GID，加入其他群组后拥有其他群组的权限
+* 创建文件时，文件群组为有效群组
+```
+groups //查看有效群组
+newgrp 群组 //切换有效群组
+```
+### 用户身份切换
+> su - username
+* 用户在不退出的情况下切换到其他用户
+* root切换到普通用户不需密码，反之需要
+* 缺陷：会暴露root密码，增加了被获取密码的概率
+> sudo 选项 要使用的命令
+* 给普通用户临时的root权限
+```
+-h 列出帮助信息
+-l 列出当前用户可执行的命令
+-u用户名或UID值 以指定的用户身份执行命令
+-k 清空密码的有效时间，下次执行sudo时需要再次进行密码验证
+-b 在后台执行指定的命令
+-p 更改询问密码的提示语
+```
+* 使用sudo前需要在配置文件中提供集中的用户管理、权限与主机等参数
+```
+visudo
+90 ##
+91 ## Allow root to run any commands anywhere
+92 root ALL=(ALL) ALL
+93 test ALL=(ALL) /usr/bin/cat  //test用户仅能以root身份执行cat
+94 user1 ALL=(ALL) ALL //可以用root身份执行所有命令
+//谁可以使用 允许使用的主机=（以谁的身份） 可执行命令的列表
+```
+* 除了上述修改配置文件，还可以将用户加入到wheel群组
+```
+visudo 去掉%wheel的注释符号"#"
+usermod -G wheel user_name
+```
+#### 批量创建用户
+> newusers
+* newusers filename
+```
+vi filename
+user1:x:2222:2004::/var/user1:/bin/tcsh
+zhang:x:2005:2005::/home/zhang:/bin/bash
+user3:x:1010:1010::/home/user3:/bin/bash
+user4:x:2010:2010::/home/user4:/bin/bash
+user5:x:2011:2011::/home/user5:/bin/bash
+即格式与/etc/passwd相同
+```
+#### 批量改用户密码
+> chpasswd
+* cat filename | chapasswd
+```
+vi filename
+user4:123456
+user5:123456
