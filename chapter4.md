@@ -27,4 +27,79 @@ root用户UID为0，系统用户UID从1到999，
 ### 用户账户与群组文件
 ---
 #### 用户账户文件
- 
+> /etc/passwd
+* 用户名：加密口令：UIG：GID：用户的描述信息：主目录：命令解释器（登录shell）
+```
+root:x:0:0:root:/root:/bin/bash //root用户
+bin:x:1:1:bin:/bin:/sbin/nologin //标准账户
+user1:x:1001:1001::/home/ueser1:/bin/bash //root用户创建的user1
+```
+> /etc/shadow
+* 由于所有用户都能读取/etc/passwd，因此加密之后的口令都存放在该文件夹，只对root用户可读
+* 分为九个域，以":"隔开，每个用户的信息一行，九个域分别是：
+1. 用户登陆名
+2. 加密后的用户口令，\*为非登录用户，！！表示无密码
+3. 1970年1月1日起，到用户最近一次口令被修改的天数
+4. 从1970年1月1日起，到用户可以更改密码的天数，即最短口令存活期
+5. 从1970年1月1日起，到用户必须更改密码的天数，即最长口令存活期
+6. 口令过期前几天提醒用户更改口令
+7. 口令过期后几天账户被禁用
+8. 口令被禁用的具体日期（相对日期，从1970年1月1日至禁用时的天数）
+9. 保留域，用于功能扩展
+```
+root:$6$PQxz7W3s$Ra7Akw53/n7rntDgjPNWdCG66/5RZgjhoe1zT2F00ouf2iDM.AVvRIYoez10hGG7kBHEaah.oH5U1t6OQj2Rf.:17654:0:99999:7:::
+bin:*:16925:0:99999:7:::
+daemon:*:16925:0:99999:7:::
+bobby:!!:17656:0:99999:7:::
+user1:!!:17656:0:99999:7:::
+```
+#### 群组文件
+> /etc/group
+* 存放用户的组账户信息，该文件的内容任何用户都能读取，每个组一行分为四个域
+* 组群名称：组群口令：GID：组群成员列表
+* 用户所在的主组群不会列出该用户，只会列将它作为附属组群的用户
+```
+root:x:0:
+bin:x:1:
+daemon:x:2:
+user1:x:1001:user2,user3
+user2:x:1002:
+user3:x:1003:user2
+```
+> /etc/gshadow
+* 存放组群的加密口令、组管理员等信息，仅root用户可读取
+* 每个组群只占一行，以":"分隔4个域
+* 组群名称：加密后的组群口令（没有就是"!"）：组群管理员：组群成员列表
+```
+root:::
+bin:::
+user1:!::user2,user3
+user2:!::
+user3:!::user2
+```
+![](https://github.com/misaka-umi/Linux/blob/main/same.png)
+### 用户账户与群组管理
+---
+#### 用户账户管理
+> useradd
+* 新建用户
+* useradd 选项 username
+```
+useradd -u 1004 -g 1004 -G 1002,1003 -p 123455 -f -1 user3
+tail -1 /etc/passwd
+user3:x:1004:1004::/home/user3:/bin/bash
+//同时有附属组群1002，1003，密码为123456，永不过期
+```
+![](https://github.com/misaka-umi/Linux/blob/main/useradd.png)
+> passwd
+* 指令和修改用户账户的口令，root可以为自己和其他用户设置，普通用户只能为自己设置
+* passwd 选 ## 查看账户信息
+> id
+* 查看当前用户的uid、gid、所属群组信息，若不指定则显示当前用户
+* id username
+> whoami
+* 查看当前用户名
+* whoami
+> w
+* 查看当前登录系统用户和详细信息
+* w
